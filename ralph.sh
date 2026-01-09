@@ -7,11 +7,13 @@ set -e
 
 MAX_ITERATIONS=${1:-10}
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 PRD_FILE="$SCRIPT_DIR/prd.json"
 PROGRESS_FILE="$SCRIPT_DIR/progress.txt"
 ARCHIVE_DIR="$SCRIPT_DIR/archive"
 LAST_BRANCH_FILE="$SCRIPT_DIR/.last-branch"
 LOG_FILE="$SCRIPT_DIR/ralph.log"
+PROMPT_FILE="$SCRIPT_DIR/prompt.md"
 
 # Colors for output
 RED='\033[0;31m'
@@ -115,7 +117,7 @@ main() {
     echo -e "${BLUE}"
     echo "╔═══════════════════════════════════════════════════════╗"
     echo "║                  claude-ralph                         ║"
-    echo "║   Autonomous AI Agent Loop (Claude Max Edition)       ║"
+    echo "║  Autonomous AI Agent Loop (Claude Subscription)       ║"
     echo "╚═══════════════════════════════════════════════════════╝"
     echo -e "${NC}"
     
@@ -167,11 +169,14 @@ EOF
         # Using --dangerously-skip-permissions for full autonomy (like amp --dangerously-allow-all)
         # Using --verbose for detailed output
         echo -e "${YELLOW}Running Claude Code...${NC}"
-        
-        OUTPUT=$(cat "$SCRIPT_DIR/prompt.md" | claude -p \
+
+        # Change to project root so Claude works on project files, not ralph files
+        cd "$PROJECT_ROOT"
+        OUTPUT=$(cat "$PROMPT_FILE" | claude -p \
             --dangerously-skip-permissions \
             --verbose \
             2>&1 | tee /dev/stderr) || true
+        cd "$SCRIPT_DIR"
         
         # Check for completion signal
         if echo "$OUTPUT" | grep -q "<promise>COMPLETE</promise>"; then

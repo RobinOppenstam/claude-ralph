@@ -44,15 +44,18 @@ npx playwright install chromium
 
 ### Setup
 
-Clone claude-ralph and make the scripts executable:
+Copy the ralph files to your project's scripts directory:
 
 ```bash
-git clone https://github.com/RobinOppenstam/claude-ralph
-cd claude-ralph
-chmod +x *.sh
+# From your project root
+mkdir -p scripts
+cd scripts
+git clone https://github.com/RobinOppenstam/claude-ralph ralph
+chmod +x ralph/*.sh
+cd ..
 ```
 
-The scripts run from inside the claude-ralph folder but work on your project in the parent directory (or specify a path). Your project stays clean - no extra files added to it.
+All ralph files (`prd.json`, `progress.txt`, `ralph.log`) stay in `scripts/ralph/`, while your project files (`src/`, `package.json`, etc.) remain in the project root. This keeps ralph self-contained and your project organized.
 
 ## Workflow
 
@@ -82,7 +85,7 @@ This creates `prd.json` with user stories structured for autonomous execution.
 ./scripts/ralph/ralph.sh [max_iterations]
 ```
 
-Default is 10 iterations.
+Default is 10 iterations. Run this from your project root directory.
 
 Ralph will:
 
@@ -97,17 +100,30 @@ Ralph will:
 
 ## File Structure
 
-| File | Purpose |
-|------|---------|
-| `ralph.sh` | The bash loop that spawns fresh Claude Code instances |
-| `ralph-once.sh` | Run a single iteration (for testing/debugging) |
-| `prompt.md` | Instructions given to each Claude Code instance |
-| `prd.json` | User stories with `passes` status (the task list) |
-| `prd.json.example` | Example PRD format for reference |
-| `progress.txt` | Append-only learnings for future iterations |
-| `skills/prd/` | Skill for generating PRDs |
-| `skills/ralph/` | Skill for converting PRDs to JSON |
-| `skills/dev-browser/` | Browser automation for UI verification |
+```
+your-project/
+├── scripts/
+│   └── ralph/                    # Ralph files (self-contained)
+│       ├── ralph.sh             # Main loop script
+│       ├── ralph-once.sh        # Single iteration script
+│       ├── ralph-status.sh      # Status checker
+│       ├── prompt.md            # Instructions for each Claude iteration
+│       ├── prd.json             # User stories with passes status
+│       ├── prd.json.example     # Example PRD format
+│       ├── progress.txt         # Append-only learnings log
+│       ├── ralph.log            # Execution log with timestamps
+│       ├── .last-branch         # Current branch tracker
+│       ├── archive/             # Previous runs
+│       └── skills/              # Claude Code skills
+│           ├── prd/             # PRD generation skill
+│           └── ralph/           # PRD to JSON conversion skill
+│
+└── [Project root]                # Your project files
+    ├── src/                      # Source code (created by Ralph)
+    ├── package.json              # Dependencies (created by Ralph)
+    ├── tsconfig.json             # Config (created by Ralph)
+    └── ...                       # Other project files
+```
 
 ## Key Differences from Original Ralph
 
@@ -154,23 +170,31 @@ When all stories have `passes: true`, Ralph outputs `<promise>COMPLETE</promise>
 
 ## Debugging
 
+Run these commands from your project root:
+
 ```bash
 # See which stories are done
-cat prd.json | jq '.userStories[] | {id, title, passes}'
+cat scripts/ralph/prd.json | jq '.userStories[] | {id, title, passes}'
 
 # See learnings from previous iterations
-cat progress.txt
+cat scripts/ralph/progress.txt
+
+# Check ralph execution log
+cat scripts/ralph/ralph.log
 
 # Check git history
 git log --oneline -10
 
 # Run single iteration for debugging
-./ralph-once.sh
+./scripts/ralph/ralph-once.sh
+
+# Check status with nice formatting
+./scripts/ralph/ralph-status.sh
 ```
 
 ## Customizing prompt.md
 
-Edit `prompt.md` to customize Ralph's behavior for your project:
+Edit `scripts/ralph/prompt.md` to customize Ralph's behavior for your project:
 
 - Add project-specific quality check commands
 - Include codebase conventions
@@ -178,7 +202,7 @@ Edit `prompt.md` to customize Ralph's behavior for your project:
 
 ## Archiving
 
-Ralph automatically archives previous runs when you start a new feature (different `branchName`). Archives are saved to `archive/YYYY-MM-DD-feature-name/`.
+Ralph automatically archives previous runs when you start a new feature (different `branchName`). Archives are saved to `scripts/ralph/archive/YYYY-MM-DD-feature-name/` and include the `prd.json`, `progress.txt`, and `ralph.log` from the previous run.
 
 ## Troubleshooting
 
@@ -192,7 +216,7 @@ claude
 
 ### Permission denied on ralph.sh
 ```bash
-chmod +x ralph.sh ralph-once.sh
+chmod +x scripts/ralph/*.sh
 ```
 
 ### jq not found

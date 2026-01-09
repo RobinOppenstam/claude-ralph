@@ -76,7 +76,7 @@ if [ "$REMAINING" -gt 0 ]; then
     echo -e "${YELLOW}$NEXT${NC}"
     echo ""
     
-    echo "Run: ./ralph.sh to continue"
+    echo "Run: ./scripts/ralph/ralph.sh to continue"
 else
     echo -e "${GREEN}🎉 All stories complete!${NC}"
 fi

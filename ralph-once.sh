@@ -6,8 +6,10 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 PRD_FILE="$SCRIPT_DIR/prd.json"
 PROGRESS_FILE="$SCRIPT_DIR/progress.txt"
+PROMPT_FILE="$SCRIPT_DIR/prompt.md"
 
 # Colors
 RED='\033[0;31m'
@@ -52,10 +54,13 @@ fi
 echo -e "${YELLOW}Running Claude Code...${NC}"
 echo ""
 
-OUTPUT=$(cat "$SCRIPT_DIR/prompt.md" | claude -p \
+# Change to project root so Claude works on project files, not ralph files
+cd "$PROJECT_ROOT"
+OUTPUT=$(cat "$PROMPT_FILE" | claude -p \
     --dangerously-skip-permissions \
     --verbose \
     2>&1 | tee /dev/stderr) || true
+cd "$SCRIPT_DIR"
 
 # Check completion
 if echo "$OUTPUT" | grep -q "<promise>COMPLETE</promise>"; then
