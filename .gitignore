@@ -4,6 +4,9 @@ progress.txt
 .last-branch
 ralph.log
 
+# Banner (hosted externally)
+banner.png
+
 # Archive is optional to commit
 # archive/
 

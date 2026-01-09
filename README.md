@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://github.com/RobinOppenstam/claude-ralph/releases/download/assets/banner.jpg" alt="claude-ralph" width="100%">
+</p>
+
 # claude-ralph
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
