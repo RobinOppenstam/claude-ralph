@@ -55,44 +55,72 @@ All ralph files (`prd.json`, `progress.txt`, `ralph.log`) stay in `scripts/ralph
 
 ## Workflow
 
-### 1. Create a PRD
+### 1. Create a PRD (Interactive)
 
-Use the PRD skill to generate a detailed requirements document:
+Use the PRD skill to generate a detailed requirements document. Start Claude Code interactively:
+
+```bash
+# From your project root
+claude
+```
+
+Then in the Claude conversation:
 
 ```
 Load the prd skill and create a PRD for [your feature description]
 ```
 
-Answer the clarifying questions. The skill saves output to `tasks/prd-[feature-name].md`.
+**Example:**
+```
+Load the prd skill and create a PRD for user authentication with email and password
+```
 
-### 2. Convert PRD to Ralph Format
+Claude will ask clarifying questions (framework, UI requirements, etc.). Answer them in the conversation. The skill saves output to `tasks/prd-[feature-name].md`.
 
-Use the Ralph skill to convert the markdown PRD to JSON:
+### 2. Convert PRD to Ralph Format (Interactive)
+
+Use the Ralph skill to convert the markdown PRD to JSON. In the same Claude session (or start a new one with `claude`):
 
 ```
 Load the ralph skill and convert tasks/prd-[feature-name].md to prd.json
 ```
 
-This creates `prd.json` with user stories structured for autonomous execution.
+**Example:**
+```
+Load the ralph skill and convert tasks/prd-user-authentication.md to prd.json
+```
 
-### 3. Run Ralph
+This creates `scripts/ralph/prd.json` with user stories structured for autonomous execution. Each story has a `passes: false` flag that Ralph will update.
+
+Exit Claude (Ctrl+C or type `exit`).
+
+### 3. Run Ralph (Autonomous)
+
+Now Ralph takes over. From your terminal (not in Claude):
 
 ```bash
 ./scripts/ralph/ralph.sh [max_iterations]
 ```
 
+**Example:**
+```bash
+./scripts/ralph/ralph.sh 10
+```
+
 Default is 10 iterations. Run this from your project root directory.
 
-Ralph will:
+Ralph will autonomously:
 
 1. Create a feature branch (from PRD `branchName`)
 2. Pick the highest priority story where `passes: false`
-3. Implement that single story
+3. Spawn a fresh Claude Code instance to implement that single story
 4. Run quality checks (typecheck, tests)
 5. Commit if checks pass
 6. Update `prd.json` to mark story as `passes: true`
 7. Append learnings to `progress.txt`
 8. Repeat until all stories pass or max iterations reached
+
+**Key difference:** Steps 1-2 are **interactive** (you guide Claude), Step 3 is **autonomous** (Ralph loops without you).
 
 ## File Structure
 
