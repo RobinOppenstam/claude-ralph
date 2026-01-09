@@ -44,6 +44,11 @@ mkdir -p scripts
 cd scripts
 git clone https://github.com/RobinOppenstam/claude-ralph ralph
 chmod +x ralph/*.sh
+
+# Copy and edit the example PRD
+cp ralph/prd.json.example ralph/prd.json
+# Then edit prd.json with your project details
+
 cd ..
 ```
 
