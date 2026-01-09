@@ -44,12 +44,11 @@ mkdir -p scripts
 cd scripts
 git clone https://github.com/RobinOppenstam/claude-ralph ralph
 chmod +x ralph/*.sh
-
-# Copy and edit the example PRD
-cp ralph/prd.json.example ralph/prd.json
-# Then edit prd.json with your project details
-
 cd ..
+
+# Copy and edit the example PRD (from project root)
+cp scripts/ralph/prd.json.example scripts/ralph/prd.json
+# Then edit scripts/ralph/prd.json with your project details
 ```
 
 All ralph files (`prd.json`, `progress.txt`, `ralph.log`) stay in `scripts/ralph/`, while your project files (`src/`, `package.json`, etc.) remain in the project root. This keeps ralph self-contained and your project organized.
