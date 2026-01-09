@@ -77,7 +77,7 @@ Load the prd skill and create a PRD for user authentication with email and passw
 
 Claude will ask clarifying questions (framework, UI requirements, etc.). Answer them in the conversation. The skill saves output to `tasks/prd-[feature-name].md`.
 
-### 2. Convert PRD to Ralph Format (Interactive)
+### 2. Convert PRD to Ralph Format (if needed)
 
 Use the Ralph skill to convert the markdown PRD to JSON. In the same Claude session (or start a new one with `claude`):
 
