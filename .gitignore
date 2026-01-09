@@ -1,0 +1,21 @@
+# Ralph working files (generated during runs)
+prd.json
+progress.txt
+.last-branch
+ralph.log
+
+# Archive is optional to commit
+# archive/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Node (if using any JS tooling)
+node_modules/

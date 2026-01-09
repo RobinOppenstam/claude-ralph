@@ -1,0 +1,90 @@
+{
+  "featureName": "User Authentication System",
+  "branchName": "ralph/auth-system",
+  "description": "Implement a complete user authentication system with login, registration, and password reset",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Create User model and database migration",
+      "priority": 1,
+      "acceptanceCriteria": [
+        "User model has fields: id, email, passwordHash, createdAt, updatedAt",
+        "Migration creates users table with proper indexes",
+        "Email field has unique constraint",
+        "typecheck passes",
+        "migration runs successfully"
+      ],
+      "passes": false,
+      "notes": "Use the existing database connection pattern in lib/db.ts"
+    },
+    {
+      "id": "US-002",
+      "title": "Implement registration endpoint",
+      "priority": 2,
+      "acceptanceCriteria": [
+        "POST /api/auth/register accepts email and password",
+        "Password is hashed before storage",
+        "Returns 400 for invalid email format",
+        "Returns 409 if email already exists",
+        "Returns 201 with user data (excluding password) on success",
+        "All tests pass"
+      ],
+      "passes": false,
+      "notes": "Use bcrypt for password hashing"
+    },
+    {
+      "id": "US-003",
+      "title": "Implement login endpoint",
+      "priority": 3,
+      "acceptanceCriteria": [
+        "POST /api/auth/login accepts email and password",
+        "Returns 401 for invalid credentials",
+        "Returns JWT token on successful login",
+        "Token expires in 24 hours",
+        "All tests pass"
+      ],
+      "passes": false,
+      "notes": "Use jsonwebtoken package, store secret in env"
+    },
+    {
+      "id": "US-004",
+      "title": "Create login form UI",
+      "priority": 4,
+      "acceptanceCriteria": [
+        "Login form with email and password fields",
+        "Form validation shows errors for empty fields",
+        "Shows loading state during submission",
+        "Displays error message on failed login",
+        "Redirects to dashboard on success",
+        "Verify in browser that form works correctly"
+      ],
+      "passes": false,
+      "notes": "Use existing form components from components/ui"
+    },
+    {
+      "id": "US-005",
+      "title": "Create registration form UI",
+      "priority": 5,
+      "acceptanceCriteria": [
+        "Registration form with email, password, and confirm password fields",
+        "Client-side validation for password match",
+        "Shows loading state during submission",
+        "Displays success message and redirects to login",
+        "Verify in browser that form works correctly"
+      ],
+      "passes": false,
+      "notes": "Reuse patterns from login form"
+    }
+  ],
+  "qualityChecks": {
+    "typecheck": "npm run typecheck",
+    "test": "npm test",
+    "lint": "npm run lint"
+  },
+  "techStack": {
+    "framework": "Next.js 14",
+    "database": "PostgreSQL with Drizzle ORM",
+    "testing": "Jest + React Testing Library",
+    "styling": "Tailwind CSS"
+  }
+}
