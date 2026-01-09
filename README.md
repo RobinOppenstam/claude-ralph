@@ -36,14 +36,6 @@ npx playwright install chromium
 
 ## Installation
 
-### Prerequisites
-
-- [Claude Code CLI](https://claude.ai/code) installed and authenticated
-- `jq` installed (`brew install jq` on macOS, `apt install jq` on Linux)
-- A git repository for your project
-
-### Setup
-
 Copy the ralph files to your project's scripts directory:
 
 ```bash
