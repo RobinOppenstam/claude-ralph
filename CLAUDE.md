@@ -13,10 +13,13 @@ git clone https://github.com/RobinOppenstam/claude-ralph ralph
 chmod +x ralph/*.sh
 cd ..
 
-# 2. Create your prd.json (copy from example and edit)
+# 2. (Optional) Install skills globally for interactive use
+./scripts/ralph/install-skills.sh
+
+# 3. Create your prd.json (copy from example and edit)
 cp scripts/ralph/prd.json.example scripts/ralph/prd.json
 
-# 3. Run ralph from project root
+# 4. Run ralph from project root
 ./scripts/ralph/ralph.sh [max_iterations]
 ```
 
@@ -106,6 +109,38 @@ cat scripts/ralph/ralph.log
 git log --oneline -10
 ```
 
+## Skills
+
+Ralph includes three Claude Code skills for interactive use:
+
+### Installing Skills Globally
+
+```bash
+# One-time setup (makes skills available in all projects)
+./scripts/ralph/install-skills.sh
+```
+
+This installs skills to `~/.config/claude/skills/` so you can use them in any project.
+
+### Available Skills
+
+1. **prd skill** - Generate detailed PRDs from natural language
+   ```
+   Load the prd skill and create a PRD for user authentication
+   ```
+
+2. **ralph skill** - Convert markdown PRDs to ralph's JSON format
+   ```
+   Load the ralph skill and convert tasks/prd-auth.md to prd.json
+   ```
+
+3. **dev-browser skill** - Browser automation for UI verification
+   ```
+   Load the dev-browser skill and verify the login page
+   ```
+
+Skills are automatically available when running ralph autonomously. Global installation is only needed for interactive Claude Code sessions.
+
 ## Tips
 
 - **Start small**: Begin with 3-4 iterations, review, then continue
@@ -113,3 +148,4 @@ git log --oneline -10
 - **Include quality checks**: Always have typecheck/test in criteria
 - **Browser verify UI**: Frontend stories need visual verification
 - **Review progress.txt**: See what Ralph learned
+- **Install skills globally**: Run `./scripts/ralph/install-skills.sh` once for better interactive experience

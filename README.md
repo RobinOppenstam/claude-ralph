@@ -40,6 +40,8 @@ npx playwright install chromium
 
 ## Installation
 
+### Option 1: Per-Project Installation (Recommended)
+
 Copy the ralph files to your project's scripts directory:
 
 ```bash
@@ -53,6 +55,35 @@ cd ..
 
 All ralph files (`prd.json`, `progress.txt`, `ralph.log`) stay in `scripts/ralph/`, while your project files (`src/`, `package.json`, etc.) remain in the project root. This keeps ralph self-contained and your project organized.
 
+The skills in `scripts/ralph/skills/` are available automatically when running ralph from your project directory.
+
+### Option 2: Install Skills Globally
+
+To use ralph skills (`prd`, `ralph`, `dev-browser`) across **all projects** in interactive Claude Code sessions:
+
+```bash
+# Quick install (recommended)
+./scripts/ralph/install-skills.sh
+
+# Or manually copy skills
+mkdir -p ~/.config/claude/skills
+cp -r scripts/ralph/skills/prd ~/.config/claude/skills/
+cp -r scripts/ralph/skills/ralph ~/.config/claude/skills/
+cp -r scripts/ralph/skills/dev-browser ~/.config/claude/skills/
+```
+
+Now you can use these skills in **any project** by loading them in Claude Code:
+
+```bash
+claude
+# Then in the Claude conversation:
+# "Load the prd skill and create a PRD for user authentication"
+# "Load the ralph skill and convert tasks/prd-auth.md to prd.json"
+# "Load the dev-browser skill and verify the login page"
+```
+
+**Note:** Global installation is optional. Skills work from `scripts/ralph/skills/` when running ralph autonomously.
+
 ## Workflow
 
 ### 1. Create a PRD (Interactive)
@@ -64,7 +95,7 @@ Use the PRD skill to generate a detailed requirements document. Start Claude Cod
 claude
 ```
 
-Then in the Claude conversation:
+Then in the Claude conversation, explicitly load the skill and request a PRD:
 
 ```
 Load the prd skill and create a PRD for [your feature description]
@@ -74,6 +105,8 @@ Load the prd skill and create a PRD for [your feature description]
 ```
 Load the prd skill and create a PRD for user authentication with email and password
 ```
+
+**Note:** If the skill doesn't load, make sure you've installed skills globally (see [Installation](#option-2-install-skills-globally)).
 
 Claude will ask clarifying questions (framework, UI requirements, etc.). Answer them in the conversation. The skill saves output to `tasks/prd-[feature-name].md`.
 
@@ -156,7 +189,7 @@ your-project/
 | CLI | `amp` | `claude` |
 | Non-interactive flag | `--dangerously-allow-all` | `-p --dangerously-skip-permissions` |
 | Pricing | Amp credits | Claude Max subscription |
-| Skills location | `~/.config/amp/skills/` | `~/.claude/commands/` |
+| Skills location | `~/.config/amp/skills/` | `~/.config/claude/skills/` |
 | Project config | `AGENTS.md` | `CLAUDE.md` |
 
 ## Critical Concepts
@@ -253,6 +286,91 @@ apt install jq
 
 # Windows (WSL)
 apt install jq
+```
+
+### Skills not loading
+
+If Claude Code can't find the skills, make sure they're installed globally:
+
+```bash
+# Install skills globally
+mkdir -p ~/.config/claude/skills
+cp -r scripts/ralph/skills/prd ~/.config/claude/skills/
+cp -r scripts/ralph/skills/ralph ~/.config/claude/skills/
+cp -r scripts/ralph/skills/dev-browser ~/.config/claude/skills/
+
+# Verify they're installed
+ls -la ~/.config/claude/skills/
+```
+
+Then load them explicitly:
+```
+Load the prd skill
+Load the ralph skill
+Load the dev-browser skill
+```
+
+### Ralph exits early (stories still incomplete)
+
+If ralph stops before completing all stories:
+
+1. **Check the status**:
+   ```bash
+   ./scripts/ralph/ralph-status.sh
+   ```
+
+2. **Review the log**:
+   ```bash
+   tail -50 scripts/ralph/ralph.log
+   ```
+
+3. **Common causes**:
+   - Claude prematurely outputting `<promise>COMPLETE</promise>`
+   - Quality checks failing (typecheck, tests)
+   - Story is too large for one iteration
+   - PRD file corruption
+
+4. **Debug with a single iteration**:
+   ```bash
+   ./scripts/ralph/ralph-once.sh
+   ```
+   This runs one iteration and shows what happened.
+
+5. **Check PRD manually**:
+   ```bash
+   cat scripts/ralph/prd.json | jq '.userStories[] | {id, title, passes}'
+   ```
+
+The latest improvements add better logging and a secondary check after each iteration to catch premature exits.
+
+## Quick Reference
+
+```bash
+# Install ralph in a project
+mkdir -p scripts && cd scripts
+git clone https://github.com/RobinOppenstam/claude-ralph ralph
+chmod +x ralph/*.sh && cd ..
+
+# Install skills globally (one-time setup, recommended)
+./scripts/ralph/install-skills.sh
+
+# Interactive PRD creation
+claude
+# "Load the prd skill and create a PRD for [feature]"
+# "Load the ralph skill and convert tasks/prd-[name].md to prd.json"
+
+# Run ralph autonomously
+./scripts/ralph/ralph.sh 10
+
+# Check status
+./scripts/ralph/ralph-status.sh
+cat scripts/ralph/prd.json | jq '.userStories[] | {id, title, passes}'
+
+# Debug single iteration
+./scripts/ralph/ralph-once.sh
+
+# See learnings
+cat scripts/ralph/progress.txt
 ```
 
 ## Credits

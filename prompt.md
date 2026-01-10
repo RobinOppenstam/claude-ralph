@@ -112,14 +112,24 @@ A frontend story is NOT complete until browser verification passes.
 
 ## Completion Check
 
-After completing a user story, check if ALL stories have `passes: true`.
-If ALL stories are complete and passing, reply with:
+**CRITICAL**: After completing your assigned user story, you MUST check if there are more stories to work on:
 
+1. Read `prd.json`
+2. Count stories where `passes: false`
+3. If there are ANY stories with `passes: false`, **DO NOT output COMPLETE**
+4. Only if ALL stories have `passes: true`, output the completion signal
+
+**Only output this when EVERY story is complete:**
 ```
 <promise>COMPLETE</promise>
 ```
 
-This signals the outer loop to exit successfully.
+**DO NOT output COMPLETE if:**
+- There are any stories with `passes: false`
+- You only completed one story in this iteration (there might be more)
+- You're unsure - check the PRD file again
+
+This signal tells the outer loop to exit successfully. Outputting it prematurely will stop the loop while work remains.
 
 ## Remember
 

@@ -152,18 +152,18 @@ EOF
         echo -e "${BLUE}═══════════════════════════════════════════════════════${NC}"
         echo -e "${CYAN}                    ITERATION $i / $MAX_ITERATIONS${NC}"
         echo -e "${BLUE}═══════════════════════════════════════════════════════${NC}"
-        
+
         get_status
-        
-        # Check if already complete
+
+        # Check if already complete BEFORE starting work
         if all_stories_complete; then
             echo -e "${GREEN}✅ All stories complete! Exiting successfully.${NC}"
             log "All stories complete at iteration $i"
             exit 0
         fi
-        
+
         log "Starting iteration $i"
-        
+
         # Run Claude Code with the prompt
         # Using -p for non-interactive (print) mode
         # Using --dangerously-skip-permissions for full autonomy (like amp --dangerously-allow-all)
@@ -175,10 +175,22 @@ EOF
         OUTPUT=$(cat "$PROMPT_FILE" | claude -p \
             --dangerously-skip-permissions \
             --verbose \
-            2>&1 | tee /dev/stderr) || true
+            2>&1 | tee /dev/stderr) || {
+            EXIT_CODE=$?
+            log "⚠️  Claude Code exited with code $EXIT_CODE"
+            cd "$SCRIPT_DIR"
+            if [ $EXIT_CODE -ne 0 ]; then
+                echo -e "${RED}Claude Code failed with exit code $EXIT_CODE${NC}"
+                echo -e "${YELLOW}Continuing to next iteration...${NC}"
+            fi
+        }
         cd "$SCRIPT_DIR"
-        
-        # Check for completion signal
+
+        # Log iteration result
+        echo ""
+        echo -e "${BLUE}Iteration $i completed. Checking status...${NC}"
+
+        # Check for completion signal from Claude
         if echo "$OUTPUT" | grep -q "<promise>COMPLETE</promise>"; then
             echo -e "${GREEN}"
             echo "╔═══════════════════════════════════════════════════════╗"
@@ -186,10 +198,29 @@ EOF
             echo "║         All user stories have been implemented        ║"
             echo "╚═══════════════════════════════════════════════════════╝"
             echo -e "${NC}"
-            log "✅ Done! All stories complete at iteration $i"
+            log "✅ Done! All stories complete at iteration $i (via COMPLETE signal)"
             exit 0
         fi
-        
+
+        # IMPORTANT: Check again AFTER Claude runs in case it updated the PRD
+        # This prevents early exit when there's still work to do
+        if all_stories_complete; then
+            echo -e "${GREEN}"
+            echo "╔═══════════════════════════════════════════════════════╗"
+            echo "║              ✅ RALPH COMPLETE!                       ║"
+            echo "║         All user stories have been implemented        ║"
+            echo "╚═══════════════════════════════════════════════════════╝"
+            echo -e "${NC}"
+            log "✅ Done! All stories verified complete at iteration $i (via PRD check)"
+            exit 0
+        fi
+
+        # Show what's remaining
+        REMAINING_NEW=$(jq '[.userStories[] | select(.passes == false)] | length' "$PRD_FILE" 2>/dev/null || echo "?")
+        if [ "$REMAINING_NEW" != "?" ] && [ "$REMAINING_NEW" -gt 0 ]; then
+            echo -e "${YELLOW}${REMAINING_NEW} stories still remaining. Continuing...${NC}"
+        fi
+
         # Brief pause between iterations
         if [ $i -lt $MAX_ITERATIONS ]; then
             echo -e "${YELLOW}Waiting 2 seconds before next iteration...${NC}"

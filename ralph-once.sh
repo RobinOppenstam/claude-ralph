@@ -56,7 +56,7 @@ echo ""
 
 # Change to project root so Claude works on project files, not ralph files
 cd "$PROJECT_ROOT"
-OUTPUT=$(cat "$PROMPT_FILE" | claude -p \
+OUTPUT=$(claude -p "$(cat "$PROMPT_FILE")" \
     --dangerously-skip-permissions \
     --verbose \
     2>&1 | tee /dev/stderr) || true
