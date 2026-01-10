@@ -66,10 +66,10 @@ To use ralph skills (`prd`, `ralph`, `dev-browser`) across **all projects** in i
 ./scripts/ralph/install-skills.sh
 
 # Or manually copy skills
-mkdir -p ~/.config/claude/skills
-cp -r scripts/ralph/skills/prd ~/.config/claude/skills/
-cp -r scripts/ralph/skills/ralph ~/.config/claude/skills/
-cp -r scripts/ralph/skills/dev-browser ~/.config/claude/skills/
+mkdir -p ~/.claude/skills
+cp -r scripts/ralph/skills/prd ~/.claude/skills/
+cp -r scripts/ralph/skills/ralph ~/.claude/skills/
+cp -r scripts/ralph/skills/dev-browser ~/.claude/skills/
 ```
 
 Now you can use these skills in **any project** by loading them in Claude Code:
@@ -189,7 +189,7 @@ your-project/
 | CLI | `amp` | `claude` |
 | Non-interactive flag | `--dangerously-allow-all` | `-p --dangerously-skip-permissions` |
 | Pricing | Amp credits | Claude Max subscription |
-| Skills location | `~/.config/amp/skills/` | `~/.config/claude/skills/` |
+| Skills location | `~/.config/amp/skills/` | `~/.claude/skills/` |
 | Project config | `AGENTS.md` | `CLAUDE.md` |
 
 ## Critical Concepts
@@ -294,13 +294,13 @@ If Claude Code can't find the skills, make sure they're installed globally:
 
 ```bash
 # Install skills globally
-mkdir -p ~/.config/claude/skills
-cp -r scripts/ralph/skills/prd ~/.config/claude/skills/
-cp -r scripts/ralph/skills/ralph ~/.config/claude/skills/
-cp -r scripts/ralph/skills/dev-browser ~/.config/claude/skills/
+mkdir -p ~/.claude/skills
+cp -r scripts/ralph/skills/prd ~/.claude/skills/
+cp -r scripts/ralph/skills/ralph ~/.claude/skills/
+cp -r scripts/ralph/skills/dev-browser ~/.claude/skills/
 
 # Verify they're installed
-ls -la ~/.config/claude/skills/
+ls -la ~/.claude/skills/
 ```
 
 Then load them explicitly:

@@ -120,7 +120,7 @@ Ralph includes three Claude Code skills for interactive use:
 ./scripts/ralph/install-skills.sh
 ```
 
-This installs skills to `~/.config/claude/skills/` so you can use them in any project.
+This installs skills to `~/.claude/skills/` so you can use them in any project.
 
 ### Available Skills
 

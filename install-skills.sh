@@ -5,7 +5,7 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SKILLS_DIR="$HOME/.config/claude/skills"
+SKILLS_DIR="$HOME/.claude/skills"
 
 # Colors
 GREEN='\033[0;32m'
