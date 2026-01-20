@@ -141,6 +141,22 @@ This installs skills to `~/.claude/skills/` so you can use them in any project.
 
 Skills are automatically available when running ralph autonomously. Global installation is only needed for interactive Claude Code sessions.
 
+## Troubleshooting
+
+### Ralph exits too early (e.g., after 2/11 tasks)
+
+**Symptom**: Ralph shows "✅ RALPH COMPLETE!" when there are still incomplete stories.
+
+**Cause**: Claude mentioned the completion tag `<promise>COMPLETE</promise>` in its explanations or reasoning (e.g., "I should NOT output `<promise>COMPLETE</promise>`"), which triggered the grep pattern.
+
+**Fixed in**: v1.1.0+ with dual verification:
+1. The prompt now explicitly warns Claude not to quote the completion tag
+2. Ralph verifies both the tag presence AND that all PRD stories are actually complete
+
+**If you see this on older versions**:
+- Update to the latest ralph.sh from the repo
+- The fix adds a double-check: even if the tag is detected, ralph now verifies the PRD before exiting
+
 ## Tips
 
 - **Start small**: Begin with 3-4 iterations, review, then continue

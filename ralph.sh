@@ -191,15 +191,24 @@ EOF
         echo -e "${BLUE}Iteration $i completed. Checking status...${NC}"
 
         # Check for completion signal from Claude
-        if echo "$OUTPUT" | grep -q "<promise>COMPLETE</promise>"; then
+        # Use grep -o to only match the exact tag, not mentions in code blocks or explanations
+        # Count occurrences - should be exactly 1 if genuinely complete
+        COMPLETE_COUNT=$(echo "$OUTPUT" | grep -o "<promise>COMPLETE</promise>" | wc -l || echo "0")
+
+        # Only exit if we find the tag AND all stories are actually complete
+        # This prevents false positives from Claude mentioning the tag in explanations
+        if [ "$COMPLETE_COUNT" -gt 0 ] && all_stories_complete; then
             echo -e "${GREEN}"
             echo "╔═══════════════════════════════════════════════════════╗"
             echo "║              ✅ RALPH COMPLETE!                       ║"
             echo "║         All user stories have been implemented        ║"
             echo "╚═══════════════════════════════════════════════════════╝"
             echo -e "${NC}"
-            log "✅ Done! All stories complete at iteration $i (via COMPLETE signal)"
+            log "✅ Done! All stories complete at iteration $i (verified via COMPLETE signal + PRD check)"
             exit 0
+        elif [ "$COMPLETE_COUNT" -gt 0 ]; then
+            log "⚠️  Claude output COMPLETE signal but PRD still has incomplete stories - ignoring false positive"
+            echo -e "${YELLOW}Warning: Completion signal detected but stories remain incomplete. Continuing...${NC}"
         fi
 
         # IMPORTANT: Check again AFTER Claude runs in case it updated the PRD

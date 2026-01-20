@@ -124,6 +124,8 @@ A frontend story is NOT complete until browser verification passes.
 <promise>COMPLETE</promise>
 ```
 
+**IMPORTANT**: Do NOT quote, mention, or reference this completion tag in your explanations, reasoning, or status updates. The tag should ONLY appear in your final output when genuinely complete. If you need to refer to it, say "the completion signal" instead of writing out the actual tag.
+
 **DO NOT output COMPLETE if:**
 - There are any stories with `passes: false`
 - You only completed one story in this iteration (there might be more)

@@ -312,36 +312,44 @@ Load the dev-browser skill
 
 ### Ralph exits early (stories still incomplete)
 
-If ralph stops before completing all stories:
+**Symptom**: Ralph shows "✅ RALPH COMPLETE!" after only 2/11 tasks, or exits when stories remain incomplete.
 
-1. **Check the status**:
+**Cause**: Claude mentioned the completion tag `<promise>COMPLETE</promise>` in its reasoning or explanations (e.g., saying "I should NOT output `<promise>COMPLETE</promise>`"), which triggered the grep pattern in older versions.
+
+**Fixed in v1.1.0+**: Ralph now uses dual verification:
+1. The prompt explicitly warns Claude not to quote the completion tag
+2. Ralph verifies BOTH tag presence AND that all PRD stories are actually complete before exiting
+
+**If you encounter this**:
+
+1. **Update ralph.sh** to the latest version from the repo (includes the dual verification fix)
+
+2. **Check the status**:
    ```bash
    ./scripts/ralph/ralph-status.sh
    ```
 
-2. **Review the log**:
+3. **Review the log**:
    ```bash
    tail -50 scripts/ralph/ralph.log
    ```
+   Look for the warning: "Claude output COMPLETE signal but PRD still has incomplete stories"
 
-3. **Common causes**:
-   - Claude prematurely outputting `<promise>COMPLETE</promise>`
+4. **Other common causes**:
    - Quality checks failing (typecheck, tests)
    - Story is too large for one iteration
    - PRD file corruption
 
-4. **Debug with a single iteration**:
+5. **Debug with a single iteration**:
    ```bash
    ./scripts/ralph/ralph-once.sh
    ```
    This runs one iteration and shows what happened.
 
-5. **Check PRD manually**:
+6. **Check PRD manually**:
    ```bash
    cat scripts/ralph/prd.json | jq '.userStories[] | {id, title, passes}'
    ```
-
-The latest improvements add better logging and a secondary check after each iteration to catch premature exits.
 
 ## Quick Reference
 
